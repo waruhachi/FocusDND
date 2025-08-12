@@ -1,4 +1,4 @@
-#include <UIKit/UIKit.h>
+#import <UIKit/UIKit.h>
 
 typedef struct CCUILayoutSize {
 	NSUInteger width;
@@ -10,20 +10,18 @@ static CCUILayoutSize const defaultLayoutSize = {1, 1};
 static NSString *const focusModuleIdentifier = @"com.apple.FocusUIModule";
 static NSString *const focusModuleBundlePath = @"/System/Library/ControlCenter/Bundles/FocusUIModule.bundle";
 
-@interface CCUIModuleSettings : NSObject
-
-- (id)initWithPortraitLayoutSize:(CCUILayoutSize)portraitSize landscapeLayoutSize:(CCUILayoutSize)landscapeSize;
-
-@end
-
 @interface UIView ()
-
 - (id)_viewControllerForAncestor;
-
-@end
-
-@interface CCUILabeledRoundButton : UIView
 @end
 
 @interface CCUIRoundButton : UIControl
+@property (retain, nonatomic) UIView *normalStateBackgroundView;
+@end
+
+@interface CCUILabeledRoundButton : UIView
+@property (retain, nonatomic) CCUIRoundButton *buttonView;
+@end
+
+@interface CCUIModuleSettings : NSObject
+- (id)initWithPortraitLayoutSize:(CCUILayoutSize)portraitSize landscapeLayoutSize:(CCUILayoutSize)landscapeSize;
 @end

@@ -2,7 +2,7 @@
 
 %hook CCUIModuleSettingsManager
 
-- (id)moduleSettingsForModuleIdentifier:(NSString *)identifier prototypeSize:(CCUILayoutSize)protoSize {
+- (CCUIModuleSettings *)moduleSettingsForModuleIdentifier:(NSString *)identifier prototypeSize:(CCUILayoutSize)protoSize {
 	if (![identifier isEqualToString:focusModuleIdentifier]) return %orig;
 
 	return [[%c(CCUIModuleSettings) alloc] initWithPortraitLayoutSize:defaultLayoutSize landscapeLayoutSize:defaultLayoutSize];
@@ -20,18 +20,35 @@
 
 %hook CCUILabeledRoundButton
 
-- (void)setFrame:(CGRect)frame{
-    if([[self.superview _viewControllerForAncestor] isKindOfClass:%c(FCCCModuleViewController)]) frame = self.superview.bounds;
-    %orig(frame);
+- (void)setFrame:(CGRect)frame {
+	if ([[self.superview _viewControllerForAncestor] isKindOfClass:%c(FCCCModuleViewController)]) {
+		frame = self.superview.bounds;
+		self.buttonView.normalStateBackgroundView.hidden = true;
+	}
+
+	%orig(frame);
 }
 
 %end
 
 %hook CCUIRoundButton
 
-- (void)setFrame:(CGRect)frame{
-    if([[self.superview.superview _viewControllerForAncestor] isKindOfClass:%c(FCCCModuleViewController)]) frame = self.superview.superview.bounds;
-    %orig(frame);
+- (void)setFrame:(CGRect)frame {
+	if ([[self.superview.superview _viewControllerForAncestor] isKindOfClass:%c(FCCCModuleViewController)]) frame = self.superview.superview.bounds;
+
+	%orig(frame);
+}
+
+- (void)_setCornerRadius:(CGFloat)cornerRadius {
+	if ([[self.superview.superview _viewControllerForAncestor] isKindOfClass:%c(FCCCModuleViewController)]) {
+		UIView *materialView = self.superview.superview.superview.subviews.firstObject;
+		if (![materialView isKindOfClass:%c(MTMaterialView)]) return;
+
+		self.layer.cornerCurve = kCACornerCurveContinuous;
+		cornerRadius = materialView.layer.cornerRadius;
+	}
+
+	%orig(cornerRadius);
 }
 
 %end
